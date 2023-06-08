@@ -1,0 +1,21 @@
+.NavBar {
+    background-color: #e3e3e3;
+    border: 1px solid #828282;
+}
+
+.NavLink {
+    text-align: right;
+}
+
+.NavLinkAlt {
+    background-color: #828282;
+    color: #f8f8f8;
+}
+
+.NavLinkAlt:hover {
+    background-color: #9c9c9c;
+}
+
+.NavLinkAlt i {
+    color: #f8f8f8;
+}
