@@ -4,12 +4,13 @@
 }
 
 .NavLink {
-    text-align: right;
+    padding: 5px;
 }
 
 .NavLinkAlt {
     background-color: #828282;
     color: #f8f8f8;
+    padding: 5px;
 }
 
 .NavLinkAlt:hover {
@@ -18,4 +19,15 @@
 
 .NavLinkAlt i {
     color: #f8f8f8;
+}
+
+.Active {
+    text-decoration: underline;
+}
+
+.NavElements {
+    width: 90%;
+    display: flex;
+    justify-content: flex-end;
+    text-align: right;
 }
