@@ -1,31 +1,75 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import logo from "../assets/ProtoLogo_PROW.png";
 import styles from "../styles/NavBar.module.css";
 import { NavLink } from "react-router-dom";
-import { CurrentUserContext } from "../App";
-
+import {
+  useCurrentUser,
+  useSetCurrentUser,
+} from "../contexts/CurrentUserContext";
+import Avatar from "./Avatar";
+import axios from "axios";
 const NavBar = () => {
-  const currentUser = useContext(CurrentUserContext);
+  const currentUser = useCurrentUser();
+  const setCurrentUser = useSetCurrentUser();
+
+  const handleSignOut = async () => {
+    try {
+      await axios.post("dj-rest-auth/logout/");
+      setCurrentUser(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const loggedInIcons = (
     <>
-      <NavDropdown title="Add" id="basic-nav-dropdown">
+      <NavDropdown
+        title="Add"
+        id="basic-nav-dropdown"
+        className={styles.NavDropdown}
+      >
         <NavDropdown.Item>
-          Workspace
+          <NavLink
+            className={styles.NavLink}
+            to="/create-workspace"
+          >
+            Workspace
+          </NavLink>
         </NavDropdown.Item>
         <NavDropdown.Item>
-          Board
+          <NavLink
+            className={styles.NavLink}
+            to="/create-board"
+          >
+            Board
+          </NavLink>
         </NavDropdown.Item>
       </NavDropdown>
-      <NavDropdown title={currentUser?.username} id="basic-nav-dropdown">
+      <NavDropdown
+        title={
+          <div className="d-flex align-items-center">
+            <span className="ml-2">{currentUser?.username}</span>
+            <Avatar src={currentUser?.profile_image} text="" height={40} />
+          </div>
+        }
+        id="basic-nav-dropdown"
+        className={styles.NavDropdown}
+      >
         <NavDropdown.Item>
-          Profile
+          <NavLink
+            className={styles.NavLink}
+            to={`/profiles/${currentUser?.profile_id}`}
+          >
+            Edit profile
+          </NavLink>
         </NavDropdown.Item>
         <NavDropdown.Item>
-          Log Out
+          <NavLink className={styles.NavLink} to="/" onClick={handleSignOut}>
+            <i className="fas fa-sign-out-alt"></i>Sign out
+          </NavLink>
         </NavDropdown.Item>
       </NavDropdown>
-      
     </>
   );
   const loggedOutIcons = (

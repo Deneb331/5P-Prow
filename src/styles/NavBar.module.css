@@ -25,6 +25,10 @@
     text-decoration: underline;
 }
 
+.NavDropdown {
+    margin: 0px 10px;
+}
+
 .NavElements {
     width: 90%;
     display: flex;
