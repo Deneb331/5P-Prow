@@ -34,12 +34,12 @@ const NavBar = () => {
         className={styles.NavDropdown}
       >
         <NavDropdown.Item>
-          <NavLink className={styles.NavLink} to="/create-workspace">
+          <NavLink className={styles.NavLink} to="/workspaces/create">
             Workspace
           </NavLink>
         </NavDropdown.Item>
         <NavDropdown.Item>
-          <NavLink className={styles.NavLink} to="/create-board">
+          <NavLink className={styles.NavLink} to="/boards/create">
             Board
           </NavLink>
         </NavDropdown.Item>
