@@ -9,9 +9,13 @@ import {
 } from "../contexts/CurrentUserContext";
 import Avatar from "./Avatar";
 import axios from "axios";
+import useClickOutsideToggle from "../hooks/useClickOutsideToggle";
+
 const NavBar = () => {
   const currentUser = useCurrentUser();
   const setCurrentUser = useSetCurrentUser();
+
+  const { expanded, setExpanded, ref } = useClickOutsideToggle();
 
   const handleSignOut = async () => {
     try {
@@ -30,18 +34,12 @@ const NavBar = () => {
         className={styles.NavDropdown}
       >
         <NavDropdown.Item>
-          <NavLink
-            className={styles.NavLink}
-            to="/create-workspace"
-          >
+          <NavLink className={styles.NavLink} to="/create-workspace">
             Workspace
           </NavLink>
         </NavDropdown.Item>
         <NavDropdown.Item>
-          <NavLink
-            className={styles.NavLink}
-            to="/create-board"
-          >
+          <NavLink className={styles.NavLink} to="/create-board">
             Board
           </NavLink>
         </NavDropdown.Item>
@@ -92,7 +90,12 @@ const NavBar = () => {
   );
 
   return (
-    <Navbar className={styles.NavBar} expand="md" fixed="top">
+    <Navbar
+      //expanded={expanded}
+      className={styles.NavBar}
+      expand="md"
+      fixed="top"
+    >
       <Container>
         <NavLink to="/">
           <Navbar.Brand>
@@ -100,7 +103,11 @@ const NavBar = () => {
             <b>PROW</b>
           </Navbar.Brand>
         </NavLink>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle
+          ref={ref}
+          aria-controls="basic-navbar-nav"
+          //onClick={() => setExpanded(!expanded)}
+        />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto text-left">
             {currentUser ? loggedInIcons : loggedOutIcons}
