@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {  useState } from "react";
 
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -67,12 +67,12 @@ function WorkspaceCreateForm() {
       ))}
 
       <Button
-        className={`${btnStyles.Button} ${btnStyles.Black}`}
+        className={`${btnStyles.Button} ${btnStyles.Grey}`}
         onClick={() => history.goBack()}
       >
         cancel
       </Button>
-      <Button className={`${btnStyles.Button} ${btnStyles.Black} `} type="submit">
+      <Button className={`${btnStyles.Button} ${btnStyles.Grey} `} type="submit">
         create
       </Button>
     </div>
