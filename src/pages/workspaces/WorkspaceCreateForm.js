@@ -67,12 +67,12 @@ function WorkspaceCreateForm() {
       ))}
 
       <Button
-        className={`${btnStyles.Button}`}
+        className={`${btnStyles.Button} ${btnStyles.Black}`}
         onClick={() => history.goBack()}
       >
         cancel
       </Button>
-      <Button className={`${btnStyles.Button}`} type="submit">
+      <Button className={`${btnStyles.Button} ${btnStyles.Black} `} type="submit">
         create
       </Button>
     </div>

@@ -4,8 +4,7 @@
   border-radius: 100px;
   border-color: transparent;
   padding: 4px 10px;
-  margin-left: 2px;
-  margin-right: 2px;
+  margin: 8px;
   min-width: 75px;
 }
 
@@ -32,15 +31,15 @@
   width: 100%;
 }
 
-.Blue,
-.BlueOutline:hover,
+.Grey,
+.GreyOutline:hover,
 .Bright:hover {
   background-color: #333;
   color: #ffffff;
 }
 
-.BlueOutline,
-.Blue:hover {
+.GreyOutline,
+.Grey:hover {
   /* border: 1px solid #2142b2; */
   background-color: #ffffff;
   color: #333;
