@@ -14,6 +14,7 @@ function List({ list }) {
   const [newCardPriorityColor, setNewCardPriorityColor] = useState(0);
   const [newCardFile, setNewCardFile] = useState(null);
   const [lists, setLists] = useState([]);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -83,6 +84,38 @@ function List({ list }) {
     setNewCardFile(null);
   };
 
+  const deleteList = async (listId) => {
+    try {
+      // Make the delete request to delete the current list
+      await axiosReq.delete(`/lists/${listId}`);
+      // ...handle successful list deletion
+    } catch (error) {
+      console.log(error);
+      // ...handle error deleting the list
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const cancelDeleteConfirmation = () => {
+    setShowDeleteConfirmation(false);
+  };
+
+  const deleteConfirmation = async () => {
+    try {
+      // Make the delete request to delete the current list
+      await deleteList(list.id);
+      // ...handle successful list deletion
+    } catch (error) {
+      console.log(error);
+      // ...handle error deleting the list
+    }
+
+    setShowDeleteConfirmation(false);
+  };
+
   return (
     <Card className="list-card">
       <Card.Body>
@@ -94,6 +127,9 @@ function List({ list }) {
       <Card.Footer>
         <Button variant="primary" onClick={handleShowModal}>
           Add Card
+        </Button>
+        <Button variant="danger" onClick={handleDeleteClick}>
+          Delete List
         </Button>
       </Card.Footer>
 
@@ -152,6 +188,24 @@ function List({ list }) {
           </Button>
           <Button variant="primary" onClick={handleCreateCard}>
             Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteConfirmation} onHide={cancelDeleteConfirmation}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete List</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this list?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={cancelDeleteConfirmation}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={deleteConfirmation}>
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>

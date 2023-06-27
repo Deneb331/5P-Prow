@@ -4,28 +4,23 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import moment from "moment";
 
-function CardComponent({ cardId, lists }) {
+function CardComponent({ cardId, lists, onEditCard, onDeleteCard }) {
   const [card, setCard] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [cardTitle, setCardTitle] = useState("");
   const [cardContent, setCardContent] = useState("");
   const [cardList, setCardList] = useState("");
   const [cardDueTime, setCardDueTime] = useState("");
   const [cardPriorityColor, setCardPriorityColor] = useState(0);
   const [cardFile, setCardFile] = useState(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     const fetchCard = async () => {
       try {
         const response = await axiosReq.get(`/cards/${cardId}`);
         setCard(response.data);
-        setCardTitle(response.data.title);
-        setCardContent(response.data.content);
-        setCardList(response.data.list);
-        setCardDueTime(response.data.due_time);
-        setCardPriorityColor(response.data.priority_color);
       } catch (error) {
         console.log(error);
       }
@@ -34,16 +29,23 @@ function CardComponent({ cardId, lists }) {
     fetchCard();
   }, [cardId]);
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleShowModal = () => {
-    setShowModal(true);
-  };
+  useEffect(() => {
+    if (card) {
+      setCardTitle(card.title);
+      setCardContent(card.content);
+      setCardList(card.list);
+      setCardDueTime(card.due_time);
+      setCardPriorityColor(card.priority_color);
+      setCardFile(card.file);
+    }
+  }, [card]);
 
   const handleEditClick = () => {
-    handleShowModal();
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
   };
 
   const handleUpdateCard = async () => {
@@ -51,52 +53,82 @@ function CardComponent({ cardId, lists }) {
       title: cardTitle,
       content: cardContent,
       list: cardList,
-      due_time: cardDueTime,
       priority_color: cardPriorityColor,
       file: cardFile,
     };
-    const newDate = new Date(cardDueTime).toISOString();
-    updatedCard.due_time = newDate;
 
-    try {
-      await axiosReq.put(`/cards/${cardId}`, updatedCard);
-      // ...handle successful card creation
-    } catch (error) {
-      console.log(error);
-      console.log(error.response.data);
+    if (cardDueTime) {
+      const updatedDate = new Date(cardDueTime);
+      updatedCard.due_time = updatedDate.toISOString();
     }
 
-    handleCloseModal();
+    try {
+      // Make the update request to update the current card
+      await axiosReq.patch(`/cards/${cardId}`, updatedCard);
+      // ...handle successful card update
+      onEditCard();
+    } catch (error) {
+      console.log(error);
+      // ...handle error updating the card
+    }
+
+    handleCloseEditModal();
   };
 
   const handleFileChange = (e) => {
     setCardFile(e.target.files[0]);
   };
 
+  const handleDeleteClick = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const cancelDeleteConfirmation = () => {
+    setShowDeleteConfirmation(false);
+  };
+
+  const deleteCard = async () => {
+    try {
+      // Make the delete request to delete the current card
+      await axiosReq.delete(`/cards/${cardId}`);
+      // ...handle successful card deletion
+      onDeleteCard();
+    } catch (error) {
+      console.log(error);
+      // ...handle error deleting the card
+    }
+    setShowDeleteConfirmation(false); // Hide the delete confirmation modal
+  };
+
   if (!card) {
     return <div>Loading...</div>;
   }
 
-  const { title, owner, content, priority_color, due_time, file } = card;
+  const { title, owner, content, priority, due_time, file } = card;
 
   return (
     <Card>
       <Card.Body>
         <Card.Title>{title}</Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">
-          Owner: {owner}
-        </Card.Subtitle>
+        <Card.Subtitle className="mb-2 text-muted">Owner: {owner}</Card.Subtitle>
         <Card.Text>{content}</Card.Text>
-        <Card.Text>Priority: {priority_color}</Card.Text>
-        <Card.Text>Due Time: {due_time}</Card.Text>
-        <Card.Text>File: {file}</Card.Text>
+        {due_time && <Card.Text>Due Time: {new Date(due_time).toLocaleString()}</Card.Text>}
+        {file && (
+          <Card.Text>
+            File: <a href={file}>{file}</a>
+          </Card.Text>
+        )}
+        <Card.Text>Priority: {priority}</Card.Text>
         <Button variant="primary" onClick={handleEditClick}>
           Edit
         </Button>
+        <Button variant="danger" onClick={handleDeleteClick}>
+          Delete
+        </Button>
       </Card.Body>
 
-      {/* Modal for editing the card */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      {/* Edit Card Modal */}
+      <Modal show={showEditModal} onHide={handleCloseEditModal}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Card</Modal.Title>
         </Modal.Header>
@@ -127,7 +159,7 @@ function CardComponent({ cardId, lists }) {
               onChange={(e) => setCardList(e.target.value)}
             >
               {lists.map((list) => (
-                <option value={list.id} key={list.id}>
+                <option key={list.id} value={list.id}>
                   {list.title}
                 </option>
               ))}
@@ -136,9 +168,8 @@ function CardComponent({ cardId, lists }) {
           <Form.Group controlId="cardDueTime">
             <Form.Label>Due Time</Form.Label>
             <Form.Control
-              type="date"
-              value={cardDueTime ? moment(cardDueTime).format("YYYY-MM-DD") : ""}
-
+              type="datetime-local"
+              value={cardDueTime ? cardDueTime.slice(0, -1) : ""}
               onChange={(e) => setCardDueTime(e.target.value)}
             />
           </Form.Group>
@@ -160,11 +191,29 @@ function CardComponent({ cardId, lists }) {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant="secondary" onClick={handleCloseEditModal}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleUpdateCard}>
-            Update
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteConfirmation} onHide={cancelDeleteConfirmation}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Card</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this card?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={cancelDeleteConfirmation}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={deleteCard}>
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>

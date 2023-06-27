@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 
 function BoardPage() {
   const { id } = useParams();
+  const [boardTitle, setBoardTitle] = useState("");
   const [lists, setLists] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newListTitle, setNewListTitle] = useState("");
@@ -36,6 +37,17 @@ function BoardPage() {
   useEffect(() => {
     let isMounted = true;
 
+    const fetchBoard = async () => {
+      try {
+        const response = await axiosReq.get(`/boards/${id}`);
+        if (isMounted) {
+          setBoardTitle(response.data.title);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const fetchLists = async () => {
       try {
         const response = await axiosReq.get(`/lists/?board=${id}`);
@@ -51,6 +63,7 @@ function BoardPage() {
       }
     };
 
+    fetchBoard();
     fetchLists();
 
     return () => {
@@ -60,7 +73,7 @@ function BoardPage() {
 
   return (
     <div>
-      <h1>Board Page</h1>
+      <h1>{boardTitle}</h1>
 
       {lists.length === 0 ? (
         <p>No lists available.</p>

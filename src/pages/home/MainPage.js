@@ -10,6 +10,7 @@ import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 function MainPage() {
   const [workspaces, setWorkspaces] = useState([]);
   const currentUser = useContext(CurrentUserContext);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     const fetchWorkspaces = async (user) => {
@@ -48,6 +49,16 @@ function MainPage() {
     fetchWorkspaces(currentUser);
   }, [currentUser]);
 
+  const handleDeleteBoard = async (boardId) => {
+    try {
+      // Make the delete request to delete the current card
+      await axiosReq.delete(`/boards/${boardId}`);
+    } catch (error) {
+      console.log(error);
+      // ...handle error deleting the card
+    }
+  };
+
   return (
     <Container>
       <h1>My Workspaces</h1>
@@ -61,13 +72,27 @@ function MainPage() {
                 <Card>
                   <Card.Img variant="top" src={board.image} />
                   <Card.Body>
-                    <Card.Text>{board.description}</Card.Text>
+                    <Card.Text>{board.title}</Card.Text>
                     <Link
                       to={`/boards/${board.id}`}
-                      className="btn btn-primary"
+                      className="btn btn-outline-primary"
                     >
-                      {board.title}
+                      View
                     </Link>
+                    <div>
+                      <Link
+                        to={`/boards/${board.id}/edit`}
+                        className="btn btn-primary"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteBoard(board.id)}
+                        className="btn btn-danger"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </Card.Body>
                 </Card>
               </Col>
