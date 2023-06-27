@@ -77,7 +77,7 @@ function BoardCreateForm() {
     formData.append("title", title);
     formData.append("workspace", workspace);
     formData.append("image", imageInput.current.files[0]);
-
+    
     try {
       const { data } = await axiosReq.post("/boards/", formData);
       history.push(`/boards/${data.id}`);

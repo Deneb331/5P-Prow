@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { axiosReq } from "../../api/axiosDefaults";
 import List from "../../components/List";
@@ -40,8 +40,11 @@ function BoardPage() {
       try {
         const response = await axiosReq.get(`/lists/?board=${id}`);
         if (isMounted) {
-          console.log("Lists: ", response.data);
-          setLists(response.data.results);
+          const fetchedLists = response.data.results.map((list) => ({
+            ...list,
+            cards: [],
+          }));
+          setLists(fetchedLists);
         }
       } catch (error) {
         console.log(error);
@@ -62,7 +65,11 @@ function BoardPage() {
       {lists.length === 0 ? (
         <p>No lists available.</p>
       ) : (
-        lists.map((list) => <List key={list.id} list={list} />)
+        <div className="lists-container">
+          {lists.map((list) => (
+            <List key={list.id} list={list} />
+          ))}
+        </div>
       )}
 
       <Button variant="primary" onClick={handleShowModal}>
