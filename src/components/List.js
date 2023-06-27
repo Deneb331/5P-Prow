@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -10,13 +10,10 @@ function List({ list }) {
   const [showModal, setShowModal] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState("");
   const [newCardContent, setNewCardContent] = useState("");
-  const [newCardList, setNewCardList] = useState("");
   const [newCardDueTime, setNewCardDueTime] = useState("");
   const [newCardPriorityColor, setNewCardPriorityColor] = useState(0);
   const [newCardFile, setNewCardFile] = useState(null);
   const [lists, setLists] = useState([]);
-
-  const [selectedValue, setSelectedValue] = useState('');
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -27,31 +24,23 @@ function List({ list }) {
     setShowModal(true);
   };
 
-  const handleDropdownChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
-
   const handleCreateCard = async () => {
     const newCard = {
       title: newCardTitle,
       content: newCardContent,
-      list: selectedValue,
-      // due_time: newCardDueTime,
+      list: list.id,
       priority_color: newCardPriorityColor,
       file: newCardFile,
     };
-    const newDate = new Date (newCardDueTime).toISOString();
-    newCard.due_time = newDate
+    const newDate = new Date(newCardDueTime).toISOString();
+    newCard.due_time = newDate;
 
     try {
-      console.log(newCardList)
-      console.log(newCard)
-      console.log(selectedValue)
       await axiosReq.post("/cards/", newCard);
       // ...handle successful card creation
     } catch (error) {
       console.log(error);
-      console.log(error.response.data)
+      console.log(error.response.data);
     }
 
     handleCloseModal();
@@ -84,12 +73,11 @@ function List({ list }) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [list.board]);
 
   const resetFormFields = () => {
     setNewCardTitle("");
     setNewCardContent("");
-    setNewCardList("");
     setNewCardDueTime("");
     setNewCardPriorityColor(0);
     setNewCardFile(null);
@@ -99,8 +87,8 @@ function List({ list }) {
     <Card className="list-card">
       <Card.Body>
         <Card.Title>{list.title}</Card.Title>
-        {list.card_list.map((card, index) => (
-          <CardComponent key={index} cardId={card} />
+        {list.card_list.map((cardId, index) => (
+          <CardComponent key={index} cardId={cardId} lists={lists} />
         ))}
       </Card.Body>
       <Card.Footer>
@@ -132,18 +120,6 @@ function List({ list }) {
               value={newCardContent}
               onChange={(e) => setNewCardContent(e.target.value)}
             />
-          </Form.Group>
-          <Form.Group controlId="cardList">
-            <Form.Label>List</Form.Label>
-            <Form.Control
-              as="select"
-              value={selectedValue}
-              onChange={handleDropdownChange}
-            >
-              {lists.map((list) => (
-                <option value={list.id}>{list.title}</option>
-              ))}
-            </Form.Control>
           </Form.Group>
           <Form.Group controlId="cardDueTime">
             <Form.Label>Due Time</Form.Label>
