@@ -15,6 +15,7 @@ function List({ list }) {
   const [newCardFile, setNewCardFile] = useState(null);
   const [lists, setLists] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [cardList, setCardList] = useState(list.card_list);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -37,8 +38,13 @@ function List({ list }) {
     newCard.due_time = newDate;
 
     try {
-      await axiosReq.post("/cards/", newCard);
+      await axiosReq.post("/cards/", newCard).then((response) => {
+        const currentCardList = cardList;
+        currentCardList.push(response.data.id);
+        setCardList(currentCardList);
+      });
       // ...handle successful card creation
+      
     } catch (error) {
       console.log(error);
       console.log(error.response.data);
@@ -103,6 +109,13 @@ function List({ list }) {
     setShowDeleteConfirmation(false);
   };
 
+  const onDeleteCard = (cardId)=>{
+    const currentCardList = cardList.filter((id)=>{
+      return id !== cardId;
+    });
+    setCardList(currentCardList);
+  };
+
   const deleteConfirmation = async () => {
     try {
       // Make the delete request to delete the current list
@@ -120,8 +133,8 @@ function List({ list }) {
     <Card className="list-card">
       <Card.Body>
         <Card.Title>{list.title}</Card.Title>
-        {list.card_list.map((cardId, index) => (
-          <CardComponent key={index} cardId={cardId} lists={lists} />
+        {cardList.map((cardId, index) => (
+          <CardComponent key={index} cardId={cardId} lists={lists} onDeleteCard={onDeleteCard} />
         ))}
       </Card.Body>
       <Card.Footer>

@@ -11,6 +11,7 @@ import BoardEdit from "./pages/boards/BoardEdit";
 import BoardPage from "./pages/boards/BoardPage";
 import WorkspaceEdit from "./pages/workspaces/WorkspaceEdit";
 import MainPage from "./pages/home/MainPage";
+import Profile from "./pages/profiles/Profile";
 import { CurrentUserProvider } from "./contexts/CurrentUserContext";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route exact path="/boards/create" render={() => <BoardCreateForm/>} />
           <Route exact path="/boards/:id" render={() => <BoardPage/>} />
           <Route exact path="/boards/:id/edit" render={() => <BoardEdit/>} />
+          <Route exact path="/profiles/:id" render={() => <Profile/>} />
           <Route render={() => <p>Page not found!</p>} />
         </Switch>
       </Container>

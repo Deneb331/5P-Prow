@@ -90,9 +90,12 @@ function CardComponent({ cardId, lists, onEditCard, onDeleteCard }) {
   const deleteCard = async () => {
     try {
       // Make the delete request to delete the current card
-      await axiosReq.delete(`/cards/${cardId}`);
+      await axiosReq.delete(`/cards/${cardId}`).then(()=>{
+        console.info('invoke callback');
+        onDeleteCard(cardId);
+      })
       // ...handle successful card deletion
-      onDeleteCard();
+     
     } catch (error) {
       console.log(error);
       // ...handle error deleting the card

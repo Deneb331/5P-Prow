@@ -10,7 +10,6 @@ import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 function MainPage() {
   const [workspaces, setWorkspaces] = useState([]);
   const currentUser = useContext(CurrentUserContext);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     const fetchWorkspaces = async (user) => {
